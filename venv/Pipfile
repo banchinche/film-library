@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+gunicorn = "*"
+
+[dev-packages]
+pytest = "*"
+pylint = "==2.6.0"
+
+[requires]
+python_version = "3.8"
