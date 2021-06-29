@@ -1,10 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_restx import Api, Resource
+from flask_restx import Api
 from flask_migrate import Migrate
 
 
 app = Flask(__name__)
+app.config['DEBUG'] = True
 
 db = SQLAlchemy(app)
 
