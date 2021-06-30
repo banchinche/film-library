@@ -1,13 +1,9 @@
 FROM python:3.8
 
-COPY /app /app
+COPY / /app
 
-COPY /tests /tests
+ENV PYTHONPATH=${PYTHONPATH}:${PWD}/app
 
-COPY /requirements.txt /requirements.txt
-
-ENV PYTHONPATH=${PYTHONPATH}:${PWD}
-
-RUN pip install -r requirements.txt
+RUN pip install -r app/requirements.txt
 
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:7070",  "wsgi:app"]

@@ -12,3 +12,12 @@ db = SQLAlchemy(app)
 api = Api(app)
 
 migrate = Migrate(app, db)
+
+
+@app.route('/home')
+def home():
+    return 'Welcome home.'
+
+@app.route('/nothome')
+def not_home():
+    return 'There is not your home.'
