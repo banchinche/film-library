@@ -1,5 +1,12 @@
-from app.app import app
-
+from app.app import app, db
+from app.models.user import User
+from app.models.director import Director
+from app.models.poster import Poster
+from app.models.genre import Genre
+from app.models.movie import Movie
+from app.models.movie_genre import MovieGenre
 
 if __name__ == '__main__':
+    # app.config['DEBUG'] = True
+    db.create_all(User, Director, Poster, Genre, Movie, MovieGenre)
     app.run()
