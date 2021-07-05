@@ -6,6 +6,8 @@ services:
         image: postgres:13.2
         restart: always
         container_name: db-movies
+        env_file:
+            - ./.env.prod.db
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -19,7 +21,7 @@ services:
         image: banchinche/flask-pure
         restart: always
         env_file: 
-            - .env.dev
+            - .env.prod
         container_name: api-movies
         ports: 
             - 7070:7070
@@ -28,6 +30,12 @@ services:
         links:
             db:pgsql-server
 
+    nginx:
+        image: banchinche/nginx-setup
+        ports:
+            - 1337:80
+          depends_on:
+            - backend
 volumes:
     db-data:
     pgadmin-data:
