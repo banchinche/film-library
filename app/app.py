@@ -1,23 +1,18 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_restx import Api
 from flask_migrate import Migrate
-
+from flask_restx import Api
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://arima:arima@localhost:5432/practice'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+engine = create_engine(
+    'postgresql://arima:arima@localhost:5432/practice',
+    echo=True
+)
 db = SQLAlchemy(app)
 
 api = Api(app)
 
 migrate = Migrate(app, db)
-
-
-@app.route('/home')
-def home():
-    return 'Welcome home.'
-
-@app.route('/nothome')
-def not_home():
-    return 'There is not your home.'
