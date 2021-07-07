@@ -5,7 +5,7 @@ from app.models.genre import Genre
 from app.models.movie import Movie
 from app.models.movie_genre import MovieGenre
 
-@app.route('/')
+@app.route('/home')
 def home():
     return 'Home'
 
