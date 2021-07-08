@@ -1,7 +1,9 @@
 FROM python:3.8
 
-COPY / /app
+COPY / /project
 
-ENV PYTHONPATH=${PYTHONPATH}:${PWD}/app
+ENV PYTHONPATH=${PYTHONPATH}:${PWD}/project
 
-RUN pip install -r app/requirements.txt
+RUN pip install -r project/requirements.txt && chmod +x /project/app/entrypoint.sh
+
+ENTRYPOINT ["/project/app/entrypoint.sh"]
