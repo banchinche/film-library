@@ -20,7 +20,7 @@ services:
     backend:
         image: banchinche/flask-pure
         restart: always
-        command: gunicorn --bind 0.0.0.0:7070 wsgi:app
+        command: gunicorn --bind 0.0.0.0:7070 manage:app
         env_file: 
             - .env.prod
         container_name: api-movies

@@ -7,7 +7,7 @@ services:
         restart: always
         container_name: db-movies
         env_file:
-            - .env.db.dev
+            - ./.env.db.dev
         environment:
             # POSTGRES_USER: ${POSTGRES_USER}
             # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -20,17 +20,15 @@ services:
 
     backend:
         image: banchinche/flask-pure
-        restart: always
+        # restart: always
         env_file: 
-            - .env.dev
+            - ./.env.dev
         container_name: api-movies
-        command: gunicorn --bind 0.0.0.0:7070 wsgi:app
+        command: python manage.py run -h 0.0.0.0:7070
         ports: 
             - 7070:7070
         volumes:
-            - ./tests:/tests
-            - ./migrations:/migrations
-            - ./app:/app
+            - ./services/backend/:/usr/src/app/
         links:
             - db:pgsql-server
     pgadmin_flask:
