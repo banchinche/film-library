@@ -1,8 +1,10 @@
+# pull official base image
 FROM python:3.8
 
+# set work directory
 WORKDIR /usr/src/app
 
-#set env variables
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -18,4 +20,4 @@ RUN pip install -r requirements.txt
 COPY . /usr/src/app/
 
 # run entrypoint.sh
-CMD /usr/src/app/entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

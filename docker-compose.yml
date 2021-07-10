@@ -1,52 +1,40 @@
-version: "3.9"
+version: '3.8'
 
-
-services: 
-    db:
-        image: postgres:13.2
-        restart: always
-        container_name: db-movies
-        env_file:
-            - ./.env.db.dev
-        environment:
-            # POSTGRES_USER: ${POSTGRES_USER}
-            # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-            # POSTGRES_DB: ${POSTGRES_DB}
-            PGDATA: /var/lib/postgresql/data
-        volumes:
-            - db-data:/var/lib/postgresql/data
-        ports:
-            - 5432:5432
-
-    backend:
-        image: banchinche/flask-pure
-        # restart: always
-        env_file: 
-            - ./.env.dev
-        container_name: api-movies
-        command: python manage.py run -h 0.0.0.0:7070
-        ports: 
-            - 7070:7070
-        volumes:
-            - ./services/backend/:/usr/src/app/
-        links:
-            - db:pgsql-server
-    pgadmin_flask:
-        image: dpage/pgadmin4:4.30
-        container_name: pgadmin_flask
-        restart: always
-        environment:
-            PGADMIN_DEFAULT_EMAIL: "arima@email"
-            PGADMIN_DEFAULT_PASSWORD: "arima-password"
-            PGADMIN_LISTEN_PORT: 80
-        ports:
-            - 8080:80
-        volumes:
-            - pgadmin-flask-data:/var/lib/pgadmin
-        links:
-            - db:pgsql-server
+services:
+  web:
+    build: ./services/web
+    command: python manage.py run -h 0.0.0.0:7070
+    volumes:
+      - ./services/web/:/usr/src/app/
+    ports:
+      - 7070:7070
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=arima
+      - POSTGRES_PASSWORD=arima
+      - POSTGRES_DB=movies
+  pgadmin:
+    image: dpage/pgadmin4:4.30
+    container_name: pgadmin_flask
+    restart: always
+    environment:
+        PGADMIN_DEFAULT_EMAIL: "arima@email"
+        PGADMIN_DEFAULT_PASSWORD: "arima-password"
+        PGADMIN_LISTEN_PORT: 80
+    ports:
+        - 8080:80
+    volumes:
+        - pgadmin-flask-data:/var/lib/pgadmin
+    links:
+        - db:pgsql-server
 
 volumes:
-    db-data:
-    pgadmin-flask-data:
-    backend-data:
+  postgres_data:
+  pgadmin-flask-data:
