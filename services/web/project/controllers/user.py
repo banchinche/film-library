@@ -40,8 +40,6 @@ class GetUsers(Resource):
                 {
                     'user_id': user.id,
                     'username': user.username,
-                    'password': user.password,
-                    'is_admin': user.is_admin,
                     'created': user.created
                 }
                 for user in users
@@ -69,8 +67,6 @@ class GetOneUser(Resource):
             return {
                 'User': user.id,
                 'username': user.username,
-                'password': user.password,
-                'is_admin': user.is_admin,
                 'created': user.created
             }, 200
         return {'Error': 'User was not found'}, 404

@@ -2,9 +2,6 @@ from flask.cli import FlaskGroup
 
 from project.app import app
 from project import models
-# from random import randint, uniform
-
-# from faker import Factory
 
 
 cli = FlaskGroup(app)

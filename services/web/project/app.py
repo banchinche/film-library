@@ -5,7 +5,8 @@ Setting up application
 from flask import Flask
 from flask_migrate import Migrate
 from flask_restplus import Api
-from project import models
+from flask_login import LoginManager
+from project import models, auth
 from project.controllers.user import api as user_namespace
 
 
@@ -30,6 +31,18 @@ api = Api(
 )
 api.init_app(app)
 api.add_namespace(user_namespace)
+
+# init flask_login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "auth.login"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Reloading the user object from the user ID stored in the session"""
+
+    return models.User.query.get(int(user_id))
 
 
 if __name__ == "__main__":

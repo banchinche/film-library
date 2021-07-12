@@ -22,7 +22,7 @@ class User(db.Model, UserMixin):
 
     def __init__(self, username, password, is_admin=False, created=str(datetime.utcnow())):
         self.username = username
-        self.password = password
+        self.set_password(password)
         self.is_admin = is_admin
         self.created = created
 
