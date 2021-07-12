@@ -19,7 +19,7 @@ def create_db():
 
 @cli.command('seed_db')
 def seed_data():
-    models.db.session.add(models.User(username='admin-user', password='pass', is_admin=True, date='2021-08-08'))
+    models.db.session.add(models.User(username='admin-user', password='pass', is_admin=True, created='2021-08-08'))
     models.db.session.commit()
 
 
