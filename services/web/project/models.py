@@ -1,8 +1,12 @@
+"""
+Module with ORM models
+"""
+
 from datetime import datetime
-from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.dialects.postgresql import INTEGER, SMALLINT, VARCHAR, TEXT, TIMESTAMP, BOOLEAN
+from sqlalchemy.dialects.postgresql import INTEGER, SMALLINT, VARCHAR, TEXT, BOOLEAN
 from sqlalchemy.sql.schema import ForeignKeyConstraint
 
 db = SQLAlchemy()
@@ -11,16 +15,16 @@ class User(db.Model, UserMixin):
     __tablename__ = 'User'
 
     id = db.Column(INTEGER, primary_key=True)
-    name = db.Column(VARCHAR, nullable=False, unique=True)
+    username = db.Column(VARCHAR, nullable=False, unique=True)
     password = db.Column(VARCHAR, nullable=False)
     is_admin = db.Column(BOOLEAN, nullable=False)
-    created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow())
+    created = db.Column(VARCHAR, nullable=False, default=str(datetime.utcnow().date()))
 
-    def __init__(self, name, password, is_admin, date):
-        self.name = name
+    def __init__(self, username, password, is_admin=False, created=str(datetime.utcnow())):
+        self.username = username
         self.password = password
         self.is_admin = is_admin
-        self.created = date
+        self.created = created
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -29,7 +33,7 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password, password)
 
     def __repr__(self):
-        return f'User: {self.name} created: {self.created} admin:{self.is_admin}'
+        return f'User: {self.username} created: {self.created} admin:{self.is_admin}'
 
 
 class Director(db.Model):
@@ -37,7 +41,7 @@ class Director(db.Model):
 
     id = db.Column(INTEGER, primary_key=True)
     name = db.Column(VARCHAR, nullable=False)
-    created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow())
+    created = db.Column(VARCHAR, nullable=False, default=str(datetime.utcnow()))
 
     def __init__(self, name, date):
         self.name = name
@@ -52,7 +56,7 @@ class Genre(db.Model):
 
     id = db.Column(INTEGER, primary_key=True)
     name = db.Column(VARCHAR, nullable=False, unique=True)
-    created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow())
+    created = db.Column(VARCHAR, nullable=False, default=str(datetime.utcnow()))
 
     def __init__(self, name, date):
         self.name = name
@@ -78,7 +82,7 @@ class Movie(db.Model):
         ['Director.id', 'User.id'],
         onupdate="CASCADE"
     )
-    created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow())
+    created = db.Column(VARCHAR, nullable=False, default=str(datetime.utcnow()))
 
     def __init__(self, name, rate, year, description, image_link, d_id, u_id, date):
         self.name = name
@@ -98,8 +102,8 @@ class MovieGenre(db.Model):
     __tablename__ = 'MovieGenre'
 
     id = db.Column(INTEGER, primary_key=True)
-    movie_id = db.Column(VARCHAR, nullable=False)
-    genre_id = db.Column(TIMESTAMP, nullable=False)
+    movie_id = db.Column(INTEGER, nullable=False)
+    genre_id = db.Column(INTEGER, nullable=False)
     ForeignKeyConstraint(
         ['movie_id', 'genre_id'],
         ['Movie.id', 'Genre.id'],

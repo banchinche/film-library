@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ "$DATABASE" = "postgres" ]
+if [ "$DATABASE" = "movies" ]
 then
-    echo "Waiting for postgres..."
+    echo "Waiting for movies..."
 
     while ! nc -z $SQL_HOST $SQL_PORT; do
       sleep 0.1
@@ -12,5 +12,5 @@ then
 fi
 
 python manage.py create_db
-
+python manage.py seed_db
 exec "$@"
