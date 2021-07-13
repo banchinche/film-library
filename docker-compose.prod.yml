@@ -1,43 +1,34 @@
-version: "3.9"
+version: '3.9'
 
+services:
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile.prod
+    command: gunicorn --bind 0.0.0.0:5000 manage:app
+    volumes:
+      - static_volume:/home/andrew/flask_project/services/web/project/static
+    expose:
+      - 5000
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod.db
+  nginx:
+    build: ./services/nginx
+    volumes:
+      - static_volume:/home/andrew/flask_project/services/web/project/static
+    ports:
+      - 1337:80
+    depends_on:
+      - web
 
-services: 
-    db:
-        image: postgres:13.2
-        restart: always
-        container_name: db-movies
-        env_file:
-            - ./.env.db.prod
-        environment:
-            POSTGRES_USER: ${POSTGRES_USER}
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-            PGDATA: /var/lib/postgresql/data
-        volumes:
-            - db-data:/var/lib/postgresql/data
-        ports:
-            - 5432:5432
-
-    backend:
-        image: banchinche/flask-pure
-        restart: always
-        command: gunicorn --bind 0.0.0.0:7070 wsgi:app
-        env_file: 
-            - .env.prod
-        container_name: api-movies
-        ports: 
-            - 7070:7070
-        volumes:
-            - backend-data:/var/lib/backend
-        depends_on:
-            - db
-
-    nginx:
-        image: banchinche/nginx-setup
-        ports:
-            - 1337:80
-        depends_on:
-            - backend
 volumes:
-    db-data:
-    pgadmin-data:
-    backend-data:
+  postgres_data_prod:
+  static_volume:
