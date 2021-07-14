@@ -5,9 +5,9 @@ Movie namespace and api-model
 from flask_restplus import fields, Namespace
 
 
-api = Namespace('movies', description='Movies from library')
+movie_namespace = Namespace('movies', description='Movies from library')
 
-movie_model = api.model(
+movie_model = movie_namespace.model(
     'Movie',
     {
         'name': fields.String('blank'),

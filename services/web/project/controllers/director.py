@@ -6,10 +6,10 @@ from flask_restplus import fields, Namespace
 
 
 
-api = Namespace('directors', description='Movie director')
+director_namespace = Namespace('directors', description='Movie director')
 
 
-director_model = api.model(
+director_model = director_namespace.model(
     'Director',
     {
         'name': fields.String('blank'),

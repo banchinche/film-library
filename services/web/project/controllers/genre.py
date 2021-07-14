@@ -3,14 +3,14 @@ Genres namespace and api-model
 """
 
 
-from flask_restplus import fields,Namespace
+from flask_restplus import fields, Namespace
 
 
 
-api = Namespace('genres', description='Movie genres')
+genre_namespace = Namespace('genres', description='Movie genres')
 
 
-genre_model = api.model(
+genre_model = genre_namespace.model(
     'Genre',
     {
         'name': fields.String('blank'),

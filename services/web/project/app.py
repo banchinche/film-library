@@ -8,10 +8,10 @@ from flask_login import LoginManager
 from flask_restplus import Api
 from project import models, auth
 
-from project.controllers.user import api as user_namespace
-from project.controllers.genre import api as genre_namespace
-from project.controllers.film import api as film_namespace
-from project.controllers.director import api as director_namespace
+from project.controllers.user import user_namespace
+from project.controllers.genre import genre_namespace
+from project.controllers.movie import movie_namespace
+from project.controllers.director import director_namespace
 
 #  init app
 app = Flask(__name__)
@@ -36,7 +36,7 @@ api = Api(
 api.init_app(app)
 api.add_namespace(user_namespace)
 api.add_namespace(genre_namespace)
-api.add_namespace(film_namespace)
+api.add_namespace(movie_namespace)
 api.add_namespace(director_namespace)
 
 # init flask_login
