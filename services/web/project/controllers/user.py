@@ -1,14 +1,15 @@
 """
-User testing default requests (GET, POST, PUT, DELETE)
+User namespace and api-model + CRUD requests
 """
 
 from flask import request
 from project.models import db, User
 from flask_restplus import fields, Resource, Namespace
 from marshmallow import ValidationError
+from datetime import datetime
 
 
-api = Namespace('users', description='User default methods')
+api = Namespace('users', description='User that operates with movies')
 
 user_model = api.model(
     'User',
@@ -40,7 +41,7 @@ class GetUsers(Resource):
                 {
                     'user_id': user.id,
                     'username': user.username,
-                    'created': user.created
+                    'created': str(user.created)
                 }
                 for user in users
             ]
@@ -67,7 +68,7 @@ class GetOneUser(Resource):
             return {
                 'User': user.id,
                 'username': user.username,
-                'created': user.created
+                'created': str(user.created)
             }, 200
         return {'Error': 'User was not found'}, 404
 
@@ -88,7 +89,7 @@ class PostUser(Resource):
         try:
             user = User(
                 username=request.json['username'], password=request.json['password'],
-                is_admin=request.json['is_admin'], created=request.json['created']
+                is_admin=request.json['is_admin'], created=datetime.fromisoformat(request.json['created'])
             )
             db.session.add(user)
             db.session.commit()

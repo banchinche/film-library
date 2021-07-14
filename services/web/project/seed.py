@@ -1,0 +1,22 @@
+from faker import Faker
+from project.models import User, Director, Genre, Movie, MovieGenre
+
+
+def seed(users, directors, movies):
+    fake = Faker()
+    genres = ('Action', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Thriller')
+    for _ in range(users):
+        User.seed(fake)
+
+    for _ in range(directors):
+        Director.seed(fake)
+
+
+    for g in genres:
+        Genre.seed(g, fake)
+
+    for _ in range(movies):
+        Movie.seed(directors, users, fake)
+
+    for movie_id in range(1, movies + 1):
+        MovieGenre.seed(movie_id, len(genres))

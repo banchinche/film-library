@@ -4,6 +4,8 @@ FROM python:3.9
 # set work directory
 WORKDIR /usr/src/app
 
+ENV PYTHONPATH=${PYTHONPATH}:${PWD}
+
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
