@@ -1,9 +1,6 @@
 .vscode
 .git*
-Dockerfile
-*docker*
 Pipfile*
 db-diagrams
-__pycache__
 .DS-Store
 README.md

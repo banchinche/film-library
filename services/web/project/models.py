@@ -1,12 +1,14 @@
 """
 Module with ORM models
 """
-
+from random import randint, sample
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
+from sqlalchemy.sql.sqltypes import INT
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.dialects.postgresql import INTEGER, SMALLINT, VARCHAR, TEXT, BOOLEAN
+from sqlalchemy.dialects.postgresql import INTEGER, SMALLINT, VARCHAR, TEXT, BOOLEAN, TIMESTAMP
 from sqlalchemy.sql.schema import ForeignKeyConstraint
 
 db = SQLAlchemy()
@@ -18,9 +20,10 @@ class User(db.Model, UserMixin):
     username = db.Column(VARCHAR, nullable=False, unique=True)
     password = db.Column(VARCHAR, nullable=False)
     is_admin = db.Column(BOOLEAN, nullable=False)
-    created = db.Column(VARCHAR, nullable=False, default=str(datetime.utcnow().date()))
+    created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    movies = db.relationship('Movie', backref='Movie')
 
-    def __init__(self, username, password, is_admin=False, created=str(datetime.utcnow())):
+    def __init__(self, username, password, is_admin=False, created=datetime.utcnow):
         self.username = username
         self.set_password(password)
         self.is_admin = is_admin
@@ -34,21 +37,47 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f'User: {self.username} created: {self.created} admin:{self.is_admin}'
+    
+    @classmethod
+    def seed(cls, fake):
+        user = User(
+            username = fake.name(),
+            password = generate_password_hash(fake.password()),
+            is_admin = False,
+            created = fake.date_between(start_date='-5y')
+        )
+        user.save()
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 class Director(db.Model):
     __tablename__ = 'Director'
 
     id = db.Column(INTEGER, primary_key=True)
     name = db.Column(VARCHAR, nullable=False)
-    created = db.Column(VARCHAR, nullable=False, default=str(datetime.utcnow()))
+    created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    directed_movie = db.relationship('Movie', backref='directed_movie')
 
-    def __init__(self, name, date):
+    def __init__(self, name, created):
         self.name = name
-        self.created = date
+        self.created = created
 
     def __repr__(self):
         return f'Director {self.name}'
+
+    @classmethod
+    def seed(cls, fake):
+        director = Director(
+            name = fake.name(),
+            created = fake.date_between(start_date='-5y')
+        )
+        director.save()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Genre(db.Model):
@@ -56,14 +85,26 @@ class Genre(db.Model):
 
     id = db.Column(INTEGER, primary_key=True)
     name = db.Column(VARCHAR, nullable=False, unique=True)
-    created = db.Column(VARCHAR, nullable=False, default=str(datetime.utcnow()))
+    created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
 
-    def __init__(self, name, date):
+    def __init__(self, name, created):
         self.name = name
-        self.created = date
+        self.created = created
 
     def __repr__(self):
         return f'Genre {self.name}'
+    
+    @classmethod
+    def seed(cls, genre_name, fake):
+        genre = Genre(
+                name = genre_name,
+                created = fake.date_between(start_date='-5y')
+                )
+        genre.save()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Movie(db.Model):
@@ -75,16 +116,16 @@ class Movie(db.Model):
     year = db.Column(SMALLINT, nullable=False)
     description = db.Column(TEXT)
     poster = db.Column(VARCHAR(255), nullable=False)
-    director_id = db.Column(INTEGER, nullable=False)
-    user_id = db.Column(INTEGER, nullable=False)
-    ForeignKeyConstraint(
-        ['director_id', 'user_id'],
-        ['Director.id', 'User.id'],
-        onupdate="CASCADE"
+    director_id = db.Column(
+        INTEGER,
+        db.ForeignKey('Director.id', ondelete='SET null'),
+        nullable=True
     )
-    created = db.Column(VARCHAR, nullable=False, default=str(datetime.utcnow()))
+    user_id = db.Column(INTEGER, db.ForeignKey('User.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    genres = db.relationship('Genre', secondary='MovieGenre')
 
-    def __init__(self, name, rate, year, description, image_link, d_id, u_id, date):
+    def __init__(self, name, rate, year, description, image_link, d_id, u_id, created):
         self.name = name
         self.rate = rate
         self.year = year
@@ -92,27 +133,54 @@ class Movie(db.Model):
         self.poster = image_link
         self.director_id = d_id
         self.user_id = u_id
-        self.created = date
+        self.created = created
 
     def __repr__(self):
         return f'Movie {self.name} {self.year} {self.rate}/10'
+    
+    @classmethod
+    def seed(cls, directors, users, fake):
+        movie = Movie(
+            name = fake.job(),
+            rate = randint(1, 10),
+            year = randint(1820, 2021),
+            description = fake.paragraph(nb_sentences=4, variable_nb_sentences=False),
+            image_link = fake.image_url(),
+            d_id = randint(1, directors),
+            u_id = randint(1, users),
+            created = fake.date_between(start_date='-1y')
+        )
+        movie.save()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class MovieGenre(db.Model):
     __tablename__ = 'MovieGenre'
 
     id = db.Column(INTEGER, primary_key=True)
-    movie_id = db.Column(INTEGER, nullable=False)
-    genre_id = db.Column(INTEGER, nullable=False)
-    ForeignKeyConstraint(
-        ['movie_id', 'genre_id'],
-        ['Movie.id', 'Genre.id'],
-        onupdate='CASCADE', ondelete='CASCADE'
-    )
-
+    movie_id = db.Column(INTEGER, db.ForeignKey('Movie.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    genre_id = db.Column(INTEGER, db.ForeignKey('Genre.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    
     def __init__(self, m_id, g_id):
         self.movie_id = m_id
         self.genre_id = g_id
 
     def __repr__(self):
         return f'{self.movie_id} : {self.genre_id}'
+
+    @classmethod
+    def seed(cls, movie_id, genres):
+        m_genres = tuple(set(sample(range(1, genres + 1), randint(1, 3))))
+        for g in m_genres:
+            movie_genre = MovieGenre(
+                m_id = movie_id,
+                g_id = g
+            )
+            movie_genre.save()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

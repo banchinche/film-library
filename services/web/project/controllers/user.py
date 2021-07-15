@@ -1,27 +1,28 @@
 """
-User testing default requests (GET, POST, PUT, DELETE)
+User namespace and api-model + CRUD requests
 """
 
 from flask import request
 from project.models import db, User
 from flask_restplus import fields, Resource, Namespace
 from marshmallow import ValidationError
+from datetime import datetime
 
 
-api = Namespace('users', description='User default methods')
+user_namespace = Namespace('users', description='User that operates with movies')
 
-user_model = api.model(
+user_model = user_namespace.model(
     'User',
     {
         'username': fields.String('blank'),
         'password': fields.String('blank'),
-        'is_admin': fields.Boolean('blank'),
+        'is_admin': fields.Boolean(False),
         'created': fields.String('blank')
     },
 )
 
 
-@api.route('/get')
+@user_namespace.route('/get')
 class GetUsers(Resource):
     """
     GET class resource (returns all users)
@@ -40,7 +41,7 @@ class GetUsers(Resource):
                 {
                     'user_id': user.id,
                     'username': user.username,
-                    'created': user.created
+                    'created': str(user.created)
                 }
                 for user in users
             ]
@@ -48,7 +49,7 @@ class GetUsers(Resource):
         return {'Error': 'No users'}, 404
 
 
-@api.route('/get/<int:user_id>')
+@user_namespace.route('/get/<int:user_id>')
 class GetOneUser(Resource):
     """
     GET class resource (returns user with certain id)
@@ -67,19 +68,19 @@ class GetOneUser(Resource):
             return {
                 'User': user.id,
                 'username': user.username,
-                'created': user.created
+                'created': str(user.created)
             }, 200
         return {'Error': 'User was not found'}, 404
 
 
-@api.route('/post')
+@user_namespace.route('/post')
 class PostUser(Resource):
     """
     POST class resource (creates new user)
     """
 
     @staticmethod
-    @api.expect(user_model)
+    @user_namespace.expect(user_model)
     def post() -> tuple:
         """
         Creates new user
@@ -88,7 +89,7 @@ class PostUser(Resource):
         try:
             user = User(
                 username=request.json['username'], password=request.json['password'],
-                is_admin=request.json['is_admin'], created=request.json['created']
+                is_admin=request.json['is_admin'], created=datetime.fromisoformat(request.json['created'])
             )
             db.session.add(user)
             db.session.commit()
@@ -97,14 +98,14 @@ class PostUser(Resource):
             return {'Error: ': str(err)}, 400
 
 
-@api.route('/put/<int:user_id>')
+@user_namespace.route('/put/<int:user_id>')
 class PutUser(Resource):
     """
     PUT class resource (updates user data)
     """
 
     @staticmethod
-    @api.expect(user_model)
+    @user_namespace.expect(user_model)
     def put(user_id):
         """
         Updates info about user
@@ -119,7 +120,7 @@ class PutUser(Resource):
             return {'Error: ': str(err)}, 400
 
 
-@api.route('/delete/<int:user_id>')
+@user_namespace.route('/delete/<int:user_id>')
 class DeleteUser(Resource):
     """
     DELETE class resource (deletes user from database)
