@@ -1,11 +1,7 @@
-from operator import mod
 from flask.cli import FlaskGroup
 
 from project.app import app
 from project import models, seed
-# from random import randint, uniform
-
-# from faker import Factory
 
 
 cli = FlaskGroup(app)
