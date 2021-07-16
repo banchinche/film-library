@@ -2,14 +2,9 @@
 Movie namespace and api-model
 """
 from flask import request
-from marshmallow import ValidationError
-from datetime import datetime
 from flask_restplus import fields, Namespace, Resource
-from project.models import db, Movie, MovieGenre, Genre, Director, User
-from marshmallow import ValidationError
-from sqlalchemy import String, func
-from sqlalchemy.dialects.postgresql import ARRAY
-from project.pagination import get_paginated_list, pagination_arguments
+from project.models import db, Movie, Genre, Director
+from project.searching import get_paginated_list, search_arguments
 
 
 movie_namespace = Namespace('movies', description='Movies from library')
@@ -34,25 +29,58 @@ class GetMovies(Resource):
     """Method GET all movies"""
 
     @staticmethod
-    @movie_namespace.expect(pagination_arguments)
+    def apply_search(
+        movies, sort, genre, f_from, f_to, director, s_string
+        ):
+        # search string and filters
+        if s_string:
+            movies = movies.filter(Movie.name.ilike(f'%{s_string}%'))
+        if director:
+            movies = movies.filter(Director.name == director)
+        if genre:
+            movies = movies.filter(Genre.name.contains(genre))
+        # year between
+        if f_from and f_to:
+            movies = movies.filter(Movie.year.between(f_from, f_to))
+        # sort by rate and by year 
+        if sort:
+            if sort == 'rate-ascending':
+                movies = movies.order_by(Movie.rate.asc())
+            elif sort == 'rate-descending':
+                movies = movies.order_by(Movie.rate.desc())
+            elif sort == 'year-ascending':
+                movies = movies.order_by(Movie.year.asc())
+            else:
+                movies = movies.order_by(Movie.year.desc())
+        return movies
+
+
+    @staticmethod
+    @movie_namespace.expect(search_arguments, validate=True)
     def get() -> tuple:
         """Get data about all movies
         Format: json
         """
-        start = request.args['start']
-        per_page = request.args['per_page']
-        genre_agg = func.array_agg(Genre.name, type=ARRAY(String)).label(
-            'genres'
-        )
-        movies = (
-            db.session.query(Movie, Director, User.username, genre_agg)
-                .select_from(Movie)
-                .join(MovieGenre)
-                .join(Genre)
-                .join(User)
-                .join(Director)
-                .group_by(Movie.id, Director.id, User.username)
-                .all()
+
+        args = request.args
+        start = args.get('start', 1)
+        per_page = args.get('per_page', 10)
+        sorting = args.get('sorting', None)
+        filtered_genre = args.get('filter_genre', None)
+        filtered_from = args.get('filter_first_date', None)
+        filtered_to = args.get('filter_second_date', None)
+        filtered_director = args.get('filter_director', None)
+        search_string = args.get('search_string', None)
+        
+        movies = Movie.all_movies()
+        movies = GetMovies.apply_search(
+            movies, 
+            sorting, 
+            filtered_genre, 
+            filtered_from,
+            filtered_to,
+            filtered_director,
+            search_string
         )
         if movies:
             result = [
@@ -64,7 +92,7 @@ class GetMovies(Resource):
                     'description': movie[0].description,
                     'poster': movie[0].poster,
                     'director-name': movie[1].name,
-                    'user': movie.username,
+                    'username': movie.username,
                     'created': str(movie[0].created)
                 }
                 for movie in movies
@@ -79,4 +107,7 @@ class GetMovies(Resource):
                 200,
             )
 
-        return {"Error": "Films was not found"}, 404
+        return {'Error': 'Movies were not found'}, 404
+
+
+
