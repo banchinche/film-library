@@ -5,11 +5,13 @@ from random import randint, sample
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
+from sqlalchemy.sql.functions import user
 from sqlalchemy.sql.sqltypes import INT
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.dialects.postgresql import INTEGER, SMALLINT, VARCHAR, TEXT, BOOLEAN, TIMESTAMP
-from sqlalchemy.sql.schema import ForeignKeyConstraint
+from sqlalchemy.dialects.postgresql import INTEGER, SMALLINT, VARCHAR, TEXT, BOOLEAN, TIMESTAMP, ARRAY
+# from sqlalchemy.sql.schema import ForeignKeyConstraint
+from sqlalchemy import func, String
 
 db = SQLAlchemy()
 
@@ -51,6 +53,12 @@ class User(db.Model, UserMixin):
     def save(self):
         db.session.add(self)
         db.session.commit()
+    
+
+
+    @classmethod
+    def exists(cls, username):
+        return User.query.filter(User.username == username).first()
 
 class Director(db.Model):
     __tablename__ = 'Director'
@@ -74,10 +82,22 @@ class Director(db.Model):
             created = fake.date_between(start_date='-5y')
         )
         director.save()
+    
+    @classmethod
+    def add_unknown(cls, fake):
+        director = Director(
+            name = 'unknown',
+            created=fake.date()
+        )
+        director.save()
 
     def save(self):
         db.session.add(self)
         db.session.commit()
+    
+    @classmethod
+    def exists(cls, name):
+        return Director.query.filter(Director.name == name).first()
 
 
 class Genre(db.Model):
@@ -102,9 +122,20 @@ class Genre(db.Model):
                 )
         genre.save()
 
+    @classmethod
+    def all_genres(cls):
+        return Genre.query.get
+
     def save(self):
         db.session.add(self)
         db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()    
+    @classmethod
+    def exists(cls, name):
+        return Genre.query.filter(Genre.name == name).first()
 
 
 class Movie(db.Model):
@@ -143,7 +174,7 @@ class Movie(db.Model):
         movie = Movie(
             name = fake.job(),
             rate = randint(1, 10),
-            year = randint(1820, 2021),
+            year = randint(1820, 2019),
             description = fake.paragraph(nb_sentences=4, variable_nb_sentences=False),
             image_link = fake.image_url(),
             d_id = randint(1, directors),
@@ -155,6 +186,29 @@ class Movie(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    @classmethod
+    def all_movies(cls) -> tuple:
+        genres_array = func.array_agg(Genre.name, type=ARRAY(String)).label('genres')
+        return (
+            db.session.query(Movie, Director, User.username, genres_array)
+            .select_from(Movie)
+            .join(MovieGenre)
+            .join(Genre)
+            .join(Director)
+            .join(User)
+            .group_by(Movie.id, Director.id, User.username)
+        )
+    
+    @classmethod
+    def exists(cls, name):
+        return Movie.query.filter(Movie.name == name).first()
+
+
 
 
 class MovieGenre(db.Model):

@@ -5,9 +5,12 @@ from project.models import User, Director, Genre, Movie, MovieGenre
 def seed(users, directors, movies):
     fake = Faker()
     genres = ('Action', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Thriller')
+
+    # does not guarantee unique usernames !!! (possible to fail seeding)
     for _ in range(users):
         User.seed(fake)
 
+    Director.add_unknown(fake)
     for _ in range(directors):
         Director.seed(fake)
 
