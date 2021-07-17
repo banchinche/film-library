@@ -12,7 +12,7 @@ auth_namespace = Namespace('auth', description='Authorization')
 
 
 auth_model = auth_namespace.model(
-    'Log in',
+    'auth',
     {
         'username': fields.String,
         'password': fields.String,

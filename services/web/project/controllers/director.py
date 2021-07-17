@@ -20,7 +20,6 @@ class GetDirectors(Resource):
     def get() -> tuple:
         """
         Get all directors
-        Format: JSON
         """
 
         directors = Director.query.all()

@@ -18,7 +18,8 @@ search_arguments.add_argument(
 )
 search_arguments.add_argument(
     'filter_genre', required=False,
-    choices=['Action', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Thriller']
+    choices=['Action', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Thriller'],
+    help='Base genres (custom does not show)'
 )
 search_arguments.add_argument(
     'filter_first_date', type=int, required=False,

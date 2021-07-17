@@ -5,6 +5,7 @@ from random import randint, sample
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
+from sqlalchemy.sql.functions import user
 from sqlalchemy.sql.sqltypes import INT
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -52,6 +53,12 @@ class User(db.Model, UserMixin):
     def save(self):
         db.session.add(self)
         db.session.commit()
+    
+
+
+    @classmethod
+    def exists(cls, username):
+        return User.query.filter(User.username == username).first()
 
 class Director(db.Model):
     __tablename__ = 'Director'
@@ -87,6 +94,10 @@ class Director(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+    
+    @classmethod
+    def exists(cls, name):
+        return Director.query.filter(Director.name == name).first()
 
 
 class Genre(db.Model):
@@ -113,11 +124,18 @@ class Genre(db.Model):
 
     @classmethod
     def all_genres(cls):
-        pass
+        return Genre.query.get
 
     def save(self):
         db.session.add(self)
         db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()    
+    @classmethod
+    def exists(cls, name):
+        return Genre.query.filter(Genre.name == name).first()
 
 
 class Movie(db.Model):
@@ -168,6 +186,10 @@ class Movie(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
     @classmethod
     def all_movies(cls) -> tuple:
@@ -181,11 +203,12 @@ class Movie(db.Model):
             .join(User)
             .group_by(Movie.id, Director.id, User.username)
         )
-
+    
     @classmethod
-    def from_id(cls, movie_id) -> tuple:
-        all_movies = cls.all_movies()
-        return all_movies.filter(movie_id)
+    def exists(cls, name):
+        return Movie.query.filter(Movie.name == name).first()
+
+
 
 
 class MovieGenre(db.Model):

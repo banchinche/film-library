@@ -19,7 +19,6 @@ class GetGenres(Resource):
     def get() -> tuple:
         """
         Get all genres
-        Format: JSON
         """
 
         genres = Genre.query.all()

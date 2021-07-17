@@ -21,7 +21,6 @@ class GetUsers(Resource):
     def get() -> tuple:
         """
         Get all users
-        Format: JSON
         """
 
         users = User.query.all()

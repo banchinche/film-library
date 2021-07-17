@@ -17,36 +17,25 @@ from project.controllers.user import user_namespace
 from project.auth import auth_namespace
 
 
-# application factory
-def create_app() -> Flask:
-    """
-    Returns instance of Flask-application
-    """
+def create_app():
     app = Flask(__name__)
     app.secret_key = 'SECRET_KEY'
     app.config.from_object(Config)
     return app
 
-#initializing database
-def init_migrate(app) -> Migrate:
-    """
-    Initializing database for our application
-    """
+def init_migrate(app):
     migrate = Migrate(app, models.db)
     models.db.init_app(app)
     migrate.init_app(app, models.db)
     return migrate
 
-def create_api(app) -> Api:
-    """
-    Creating Api for our application
-    """
+def create_api(app):
     api = Api(
     version='1.0',
     title='REST-API services',
     description='API service for managing the film library',
     prefix='/api/v1',
-    )
+)
     api.init_app(app)
     return api
 
@@ -67,6 +56,7 @@ api.add_namespace(auth_namespace)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth_log_in'
+login_manager.logout_view = 'auth_log_out'
 
 
 @login_manager.user_loader
