@@ -1,5 +1,9 @@
 from faker import Faker
-from project.models import User, Director, Genre, Movie, MovieGenre
+from project.models.user import User
+from project.models.director import Director
+from project.models.genre import Genre
+from project.models.movie import Movie
+from project.models.movie_genre import MovieGenre
 
 
 def seed(users, directors, movies):

@@ -3,7 +3,7 @@ Genres namespace and api-model
 """
 
 from flask_restplus import Namespace, Resource
-from project.models import Genre
+from project.models.genre import Genre
 
 
 genre_namespace = Namespace('genres', description='Movie genres')

@@ -3,7 +3,7 @@ Director namespace and api-model
 """
 
 from flask_restplus import Namespace, Resource
-from project.models import Director
+from project.models.director import Director
 
 
 

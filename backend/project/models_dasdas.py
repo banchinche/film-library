@@ -4,9 +4,6 @@ Module with ORM models
 from random import randint, sample
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import backref
-from sqlalchemy.sql.functions import user
-from sqlalchemy.sql.sqltypes import INT
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.dialects.postgresql import INTEGER, SMALLINT, VARCHAR, TEXT, BOOLEAN, TIMESTAMP, ARRAY

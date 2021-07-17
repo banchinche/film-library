@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import request
 from flask_login import login_user, logout_user, login_required
 from flask_restplus import fields, Resource, Namespace
-from project.models import User
+from project.models.user import User
 
 
 auth_namespace = Namespace('auth', description='Authorization')

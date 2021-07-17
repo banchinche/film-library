@@ -3,7 +3,7 @@ User namespace and api-model + CRUD requests
 """
 
 from flask import request
-from project.models import User
+from project.models.user import User
 from flask_restplus import Resource, Namespace
 
 

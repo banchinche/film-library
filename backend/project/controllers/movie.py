@@ -6,7 +6,11 @@ from datetime import datetime
 from flask import request
 from flask_login import login_required, current_user
 from flask_restplus import fields, Namespace, Resource
-from project.models import Movie, Genre, Director, MovieGenre
+from project.models.director import Director
+from project.models.movie import Movie
+from project.models.genre import Genre
+from project.models.movie_genre import MovieGenre
+
 from project.searching import get_paginated_list, search_arguments
 from marshmallow import ValidationError
 

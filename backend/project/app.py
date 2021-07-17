@@ -2,19 +2,19 @@
 Setting up application
 """
 
-import re
 from flask import Flask
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_restplus import Api
-from project import models
 
-from project.config import Config
-from project.controllers.director import director_namespace
-from project.controllers.genre import genre_namespace
-from project.controllers.movie import movie_namespace
-from project.controllers.user import user_namespace
-from project.auth import auth_namespace
+from .models import db
+from project.models.user import User
+from .config import Config
+from .controllers.director import director_namespace
+from .controllers.genre import genre_namespace
+from .controllers.movie import movie_namespace
+from .controllers.user import user_namespace
+from .auth import auth_namespace
 
 
 def create_app():
@@ -24,9 +24,9 @@ def create_app():
     return app
 
 def init_migrate(app):
-    migrate = Migrate(app, models.db)
-    models.db.init_app(app)
-    migrate.init_app(app, models.db)
+    migrate = Migrate(app, db)
+    db.init_app(app)
+    migrate.init_app(app, db)
     return migrate
 
 def create_api(app):
@@ -65,7 +65,7 @@ def load_user(user_id):
     Reloading the user object from the user ID stored in the session
     """
 
-    return models.User.query.get(int(user_id))
+    return User.query.get(int(user_id))
 
 if __name__ == '__main__':
     app.debug = True

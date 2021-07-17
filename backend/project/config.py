@@ -1,6 +1,4 @@
-"""
-Configuration of app
-"""
+"""Configuration of app"""
 import os
 
 
