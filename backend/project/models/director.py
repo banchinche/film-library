@@ -11,7 +11,7 @@ class Director(db.Model):
     created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
     directed_movie = db.relationship('Movie', backref='directed_movie')
 
-    def __init__(self, name, created):
+    def __init__(self, name, created=datetime.utcnow):
         self.name = name
         self.created = created
 

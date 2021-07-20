@@ -28,7 +28,7 @@ class Movie(db.Model):
     created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
     genres = db.relationship('Genre', secondary='MovieGenre')
 
-    def __init__(self, name, rate, year, description, image_link, d_id, u_id, created):
+    def __init__(self, name, rate, year, description, image_link, d_id, u_id, created=datetime.utcnow):
         self.name = name
         self.rate = rate
         self.year = year

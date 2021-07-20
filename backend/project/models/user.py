@@ -34,7 +34,7 @@ class User(db.Model, UserMixin):
     def seed(cls, fake):
         user = User(
             username = fake.name(),
-            password = generate_password_hash(fake.password()),
+            password = fake.password(),
             is_admin = False,
             created = fake.date_between(start_date='-5y')
         )

@@ -10,7 +10,7 @@ class Genre(db.Model):
     name = db.Column(VARCHAR, nullable=False, unique=True)
     created = db.Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
 
-    def __init__(self, name, created):
+    def __init__(self, name, created=datetime.utcnow):
         self.name = name
         self.created = created
 
