@@ -7,7 +7,8 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_restplus import Api
-
+from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 from .models import db
 from project.models.user import User
 from .config import Config
@@ -22,6 +23,8 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = Config.SECRET_KEY
     app.config.from_object(Config)
+    cors = CORS(app)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
     return app
 
 def init_migrate(app):

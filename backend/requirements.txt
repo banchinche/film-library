@@ -7,7 +7,10 @@ Flask-Migrate==3.0.1
 gunicorn==20.1.0
 flask_login==0.4.1
 flask-restplus==0.13.0
+flask_cors==3.0.10
 Werkzeug==0.16.1
 marshmallow==3.12.2
 faker==6.1.1
 sqlalchemy==1.4.20
+pytest==6.2.4
+requests==2.26.0

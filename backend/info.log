@@ -1,0 +1,6 @@
+INFO:werkzeug: * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:192.168.224.1 - - [20/Jul/2021 23:25:51] "GET / HTTP/1.0" 200 -
+INFO:werkzeug:192.168.224.1 - - [20/Jul/2021 23:25:51] "GET /api/v1/swagger.json HTTP/1.0" 200 -
+INFO:werkzeug:192.168.224.1 - - [20/Jul/2021 23:25:53] "GET / HTTP/1.0" 200 -
+INFO:werkzeug:192.168.224.1 - - [20/Jul/2021 23:25:53] "GET /api/v1/swagger.json HTTP/1.0" 200 -
+INFO:werkzeug:192.168.224.1 - - [20/Jul/2021 23:26:00] "GET /api/v1/directors/get HTTP/1.0" 200 -

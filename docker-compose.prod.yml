@@ -26,8 +26,8 @@ services:
   nginx:
     build: ./nginx
     container_name: nginx
-    volumes:
-      - ./nginx/:/usr/src/nginx/
+    # volumes:
+    #   - ./nginx/:/usr/src/nginx/
     ports:
       - 1337:80
     depends_on:
