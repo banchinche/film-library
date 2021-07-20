@@ -2,6 +2,7 @@
 Setting up application
 """
 
+import logging
 from flask import Flask
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -19,7 +20,7 @@ from .auth import auth_namespace
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = 'SECRET_KEY'
+    app.secret_key = Config.SECRET_KEY
     app.config.from_object(Config)
     return app
 
@@ -42,6 +43,14 @@ def create_api(app):
 app = create_app()
 migrate = init_migrate(app=app)
 api = create_api(app=app)
+
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[
+        logging.FileHandler(Config.LOG_FILE),
+        logging.StreamHandler()
+    ]
+)
 
 
 # namespaces
