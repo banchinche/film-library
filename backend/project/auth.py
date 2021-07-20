@@ -100,8 +100,5 @@ class LogOut(Resource):
         """
         User logout
         """
-        try:
-            logout_user()
-            return {'Notification': 'You logged out.'}, 202
-        except:
-            return {'Error': 'You was not logined.'}, 400
+        logout_user()
+        return {'Notification': 'You logged out.'}, 202

@@ -2,7 +2,7 @@
 Movie namespace and api-model
 """
 from datetime import datetime
-
+from project.models import db
 from flask import request
 from flask_login import login_required, current_user
 from flask_restplus import fields, Namespace, Resource
@@ -294,7 +294,8 @@ class DeleteMovie(Resource):
                 return {'Error': 'No such movie'}, 404
             if current_user and current_user.id == movie.user_id:
                 movie.delete()
+                db.session.commit()
                 return {'Notification': 'Movie deleted succesfully.'}, 201
-            return {'Error': 'You can not use this resource unauthorized.'}, 403
+            return {'Error': 'You are not the owner of this post.'}, 403
         except ValidationError as error:
             return {'Error': str(error)}, 400
