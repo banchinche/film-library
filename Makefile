@@ -33,6 +33,8 @@ help: ## This help.
 
 up: docker-compose up
 
+up-prod: docker-compose -f docker-compose.prod.yml up --build
+
 stop: docker-compose stop
 
 down: docker-compose down

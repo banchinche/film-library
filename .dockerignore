@@ -1,6 +1,3 @@
 .vscode
 .git*
-Pipfile*
 db-diagrams
-.DS-Store
-README.md
