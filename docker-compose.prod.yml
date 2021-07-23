@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: backend
+    command: python manage.py run -h 0.0.0.0
+    volumes:
+      - ./backend/:/usr/src/app/
+    expose:
+      - 5000
+    env_file: 
+      - ./.env.prod
+    depends_on:
+      - db
+  db:
+    image: postgres:13-alpine
+    container_name: database      
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod.db
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    # volumes:
+    #   - ./nginx/:/usr/src/nginx/
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
+
+volumes:
+  postgres_data_prod:

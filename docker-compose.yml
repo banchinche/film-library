@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  web:
+    build: ./backend
+    container_name: backend
+    command: python manage.py run -h 0.0.0.0
+    volumes:
+      - ./backend/:/usr/src/app/
+    ports:
+      - 5000:5000
+    env_file:
+      - ./.env.dev
+    depends_on:
+          - db
+    networks:
+      - api
+  db:
+    image: postgres:13-alpine
+    container_name: database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    networks:
+      - api
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=movies
+  pgadmin4:
+    image: 'dpage/pgadmin4:latest'
+    container_name: pgadmin
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "andrew.hrimov@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "andrew"
+    networks:
+      - api
+
+networks:
+    api:
+        driver: bridge
+volumes:
+  postgres_data:
